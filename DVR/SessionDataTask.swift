@@ -117,6 +117,21 @@ class SessionDataTask: NSURLSessionDataTask {
                 abort()
             }
 
+            if let delegate = this.session.delegate as? NSURLSessionDataDelegate {
+                // Delegate message #1
+                delegate.URLSession?(this.session, dataTask: this, didReceiveResponse: response) { disposition in
+                    // TODO
+                }
+
+                // Delegate message #2
+                if let responseData = data {
+                    delegate.URLSession?(this.session, dataTask: this, didReceiveData: responseData)
+                }
+
+                // Delegate message #3
+                delegate.URLSession?(this.session, task: this, didCompleteWithError: nil)
+            }
+
             // Still call the completion block so the user can chain requests while recording.
             dispatch_async(this.queue) {
                 this.completion?(data, response, nil)
